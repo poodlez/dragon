@@ -1,11 +1,11 @@
 {
   "name": "dragon-webgl",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Dragon FM Music Visualizer with GLSL Hills",
+  "main": "js/main.js",
   "type": "module",
   "scripts": {
-    "start": "http-server -p 8080",
+    "start": "http-server -p 3000 --cors",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

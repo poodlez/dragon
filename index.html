@@ -3,16 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dragon FM Music Visualizer</title>
+    <title>Dragon FM</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="loading">Loading...</div>
-    <div id="controls">
-        <input type="file" id="audio-upload" accept="audio/*">
-        <button id="play-pause">Play/Pause</button>
+    <div class="p-summary">
+        <h1>Dragon FM</h1>
+        <p><a href="http://www.tplh.net/">this source.</a></p>
     </div>
-    <div id="debug"></div>
-    <script type="module" src="js/main.js"></script>
+    <canvas class="p-canvas-webgl"></canvas>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.167.1/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.167.1/examples/jsm/"
+            }
+        }
+    </script>
+    <script type="module" src="main.js"></script>
 </body>
 </html>
