@@ -1,10 +1,4 @@
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { FirstPersonControls } from 'three/addons/controls/FirstPersonControls.js';
-
-let camera, controls, scene, renderer;
-let clock;
-let dragon;
+import * as THREE from './three.module.js';
 
 class Plane {
   constructor() {
@@ -14,7 +8,7 @@ class Plane {
     this.mesh = this.createMesh();
     this.time = 1;
   }
-
+  
   createMesh() {
     return new THREE.Mesh(
       new THREE.PlaneGeometry(256, 256, 256, 256),
@@ -144,78 +138,52 @@ class Plane {
       })
     );
   }
-
+  
   render(time) {
     this.uniforms.time.value += time * this.time;
   }
 }
 
-function init() {
-    camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
-    camera.position.set(0, 16, 128);
-    camera.lookAt(new THREE.Vector3(0, 28, 0));
+const init = () => {
+  const canvas = document.getElementById('canvas-webgl');
+  const renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    canvas: canvas,
+  });
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
+  const clock = new THREE.Clock();
 
-    clock = new THREE.Clock();
+  const plane = new Plane();
 
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xeeeeee);
-
-    const plane = new Plane();
-    scene.add(plane.mesh);
-
-    const loader = new GLTFLoader();
-    loader.load('../models/Dragon Low Poly.glb', (gltf) => {
-        dragon = gltf.scene;
-        dragon.scale.set(0.05, 0.05, 0.05);
-        dragon.position.set(0, 50, 0);
-        scene.add(dragon);
-        console.log('Dragon model loaded successfully');
-    }, undefined, (error) => {
-        console.error('Error loading dragon model:', error);
-    });
-
-    renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
-
-    controls = new FirstPersonControls(camera, renderer.domElement);
-    controls.movementSpeed = 500;
-    controls.lookSpeed = 0.1;
-
-    stats = new Stats();
-    document.body.appendChild(stats.dom);
-
-    window.addEventListener('resize', onWindowResize);
-}
-
-function onWindowResize() {
+  const resizeWindow = () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    controls.handleResize();
-}
+  }
 
-function animate() {
-    requestAnimationFrame(animate);
-    render();
-    stats.update();
-}
-
-function render() {
-    const delta = clock.getDelta();
-    const time = clock.getElapsedTime() * 10;
-
-    if (dragon) {
-        dragon.position.y = 50 + Math.sin(time * 0.1) * 5;
-        dragon.rotation.y = time * 0.05;
-    }
-
-    controls.update(delta);
+  const render = () => {
+    plane.render(clock.getDelta());
     renderer.render(scene, camera);
+  }
+
+  const renderLoop = () => {
+    render();
+    requestAnimationFrame(renderLoop);
+  }
+
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor(0xeeeeee, 1.0);
+  camera.position.set(0, 16, 128);
+  camera.lookAt(new THREE.Vector3(0, 28, 0));
+
+  scene.add(plane.mesh);
+
+  window.addEventListener('resize', resizeWindow);
+  resizeWindow();
+  renderLoop();
 }
 
 init();
-animate();
-
-console.log('Scene setup complete, animation started');
